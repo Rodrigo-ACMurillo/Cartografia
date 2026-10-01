@@ -3,39 +3,36 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Cartografía Social Viva: Santa Genoveva de Docordó | Trabajo Social CENDA</title>
+  <title>Archivo Vivo y Cartografía Social: Santa Genoveva de Docordó | Trabajo Social CENDA</title>
 
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <!-- Google Fonts: Cinzel Decorative, Outfit & Plus Jakarta Sans -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Outfit:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
   <!-- FontAwesome 6 -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
 
   <style>
     :root {
-      --bg-warm: #f5ede0;
-      --paper: #faf4eb;
+      --jungle-dark: #0f291e;
+      --jungle: #1b4d3e;
       --ochre: #c86d35;
-      --jungle: #214d3c;
-      --river-blue: #236f8e;
-      --danger-crimson: #a63a3a;
-      --dark-text: #2a221b;
-      --border-ink: #3c2a1e;
+      --gold: #e9a848;
+      --sand: #f4ede2;
+      --paper: #fbf8f3;
+      --ink: #2b221a;
+      --crimson: #a63a3a;
+      --water: #1d6986;
     }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
-      background-color: var(--bg-warm);
-      color: var(--dark-text);
+      background: var(--sand);
+      color: var(--ink);
       display: flex;
       height: 100vh;
       overflow: hidden;
@@ -43,140 +40,137 @@
 
     /* BARRA LATERAL NARRATIVA */
     #sidebar {
-      width: 440px;
+      width: 460px;
       min-width: 380px;
       height: 100%;
       background: var(--paper);
-      border-right: 3px solid #d4c2aa;
       display: flex;
       flex-direction: column;
-      box-shadow: 6px 0 25px rgba(0,0,0,0.12);
+      border-right: 3px solid #dcd0bf;
+      box-shadow: 8px 0 30px rgba(0,0,0,0.12);
       z-index: 1000;
-      transition: transform 0.35s ease;
+      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    .header-banner {
-      background: linear-gradient(135deg, var(--jungle) 0%, #10281f 100%);
+    .banner {
+      background: linear-gradient(135deg, var(--jungle-dark) 0%, var(--jungle) 100%);
       color: #fff;
       padding: 1.4rem 1.2rem;
       border-bottom: 5px solid var(--ochre);
     }
 
-    .academic-tag {
+    .academic-pill {
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      background: rgba(255,255,255,0.14);
+      background: rgba(255,255,255,0.15);
       padding: 4px 10px;
       border-radius: 20px;
       font-size: 0.72rem;
       font-weight: 600;
-      text-transform: uppercase;
       letter-spacing: 0.6px;
+      text-transform: uppercase;
       margin-bottom: 8px;
     }
 
-    .header-banner h1 {
+    .banner h1 {
       font-family: 'Cinzel Decorative', cursive, serif;
-      font-size: 1.18rem;
+      font-size: 1.15rem;
       line-height: 1.3;
-      letter-spacing: 0.5px;
     }
 
-    .header-banner p {
-      font-size: 0.82rem;
+    .banner p {
+      font-size: 0.8rem;
       opacity: 0.88;
-      margin-top: 5px;
+      margin-top: 4px;
       font-style: italic;
     }
 
-    /* FILTROS DIDÁCTICOS */
-    .filter-bar {
+    /* BARRA DE HERRAMIENTAS Y PESTAÑAS */
+    .tabs-bar {
       display: flex;
-      gap: 6px;
-      padding: 10px 14px;
       background: #ebdcc9;
-      border-bottom: 1px solid #d8c3ad;
-      overflow-x: auto;
+      border-bottom: 1px solid #d3bfab;
     }
 
-    .filter-btn {
-      background: #fff;
-      border: 1px solid #c9b49b;
-      padding: 6px 11px;
-      border-radius: 20px;
-      font-size: 0.76rem;
+    .tab-btn {
+      flex: 1;
+      border: none;
+      background: none;
+      padding: 10px 6px;
+      font-size: 0.78rem;
       font-weight: 600;
-      color: var(--dark-text);
+      color: var(--ink);
       cursor: pointer;
-      white-space: nowrap;
       display: flex;
       align-items: center;
-      gap: 5px;
+      justify-content: center;
+      gap: 6px;
       transition: all 0.2s;
     }
 
-    .filter-btn.active, .filter-btn:hover {
-      background: var(--jungle);
-      color: #fff;
-      border-color: var(--jungle);
+    .tab-btn.active {
+      background: var(--paper);
+      color: var(--jungle);
+      border-bottom: 3px solid var(--jungle);
     }
 
     /* CONTENEDOR DESPLAZABLE */
-    .content-area {
+    .panel-scroll {
       flex: 1;
       overflow-y: auto;
-      padding: 1.2rem;
+      padding: 1.1rem;
       display: flex;
       flex-direction: column;
       gap: 1.1rem;
     }
 
-    .card-note {
+    .box {
       background: #fff;
       border-radius: 12px;
       padding: 1.1rem;
-      border: 1px solid #e2d2c0;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+      border: 1px solid #e5d8c8;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.03);
     }
 
-    .card-note h2 {
+    .box h2 {
       font-family: 'Outfit', sans-serif;
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: var(--jungle);
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.6rem;
     }
 
-    .card-note p {
-      font-size: 0.85rem;
+    .box p {
+      font-size: 0.84rem;
       line-height: 1.5;
-      color: #493f35;
+      color: #433930;
     }
 
     /* NAVEGADOR DE NODOS */
-    .node-item {
+    .node-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .node-card {
       display: flex;
       align-items: center;
       gap: 12px;
       background: #fff;
       padding: 10px 12px;
       border-radius: 10px;
-      border: 1px solid #e2d2c0;
+      border: 1px solid #e5d8c8;
       cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      margin-bottom: 8px;
+      transition: all 0.2s ease;
     }
 
-    .node-item:hover {
+    .node-card:hover {
       transform: translateX(4px);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 4px 14px rgba(0,0,0,0.07);
       border-color: var(--ochre);
     }
 
-    .node-icon {
+    .node-avatar {
       width: 36px;
       height: 36px;
       border-radius: 50%;
@@ -188,28 +182,75 @@
       flex-shrink: 0;
     }
 
-    .node-info h4 {
-      font-size: 0.88rem;
-      font-weight: 600;
-      color: var(--dark-text);
+    .node-texts h4 { font-size: 0.88rem; font-weight: 600; }
+    .node-texts span { font-size: 0.72rem; color: #736456; }
+
+    /* REPRODUCTOR SONORO EXPERIENCIAL */
+    .audio-player-box {
+      background: linear-gradient(135deg, #1b4d3e 0%, #0e2a22 100%);
+      color: #fff;
+      border-radius: 14px;
+      padding: 1.2rem;
+      border: 2px solid var(--gold);
     }
 
-    .node-info span {
-      font-size: 0.74rem;
-      color: #7a6e63;
+    .audio-player-box h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--gold);
+      margin-bottom: 8px;
+    }
+
+    .sound-status {
+      font-size: 0.78rem;
+      opacity: 0.85;
+      margin-bottom: 12px;
+      min-height: 32px;
+      line-height: 1.35;
+    }
+
+    .sound-btns {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-sound {
+      flex: 1;
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: #fff;
+      padding: 8px 10px;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .btn-sound:hover {
+      background: var(--gold);
+      color: var(--ink);
+      border-color: var(--gold);
     }
 
     /* MAPA INTERACTIVO */
     #map-viewport {
       flex: 1;
       height: 100%;
-      background: #2b221a;
+      background: #231b14;
     }
 
-    /* PINES ANIMADOS EN EL MAPA ARTÍSTICO */
-    .pulse-pin {
-      width: 36px;
-      height: 36px;
+    /* PINES PERSONALIZADOS */
+    .pin-sonar {
+      width: 38px;
+      height: 38px;
       border-radius: 50%;
       border: 3px solid #fff;
       display: flex;
@@ -218,149 +259,329 @@
       color: #fff;
       font-size: 15px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      animation: pulseAnim 2.2s infinite;
-      transition: transform 0.2s;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.6);
+      position: relative;
+      transition: transform 0.2s ease;
     }
 
-    .pulse-pin:hover {
-      transform: scale(1.25);
+    .pin-sonar:hover { transform: scale(1.22); }
+
+    .pin-sonar::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid inherit;
+      animation: ripple 2s infinite;
+      opacity: 0;
     }
 
-    @keyframes pulseAnim {
-      0% { box-shadow: 0 0 0 0 rgba(200, 109, 53, 0.7); }
-      70% { box-shadow: 0 0 0 12px rgba(200, 109, 53, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(200, 109, 53, 0); }
+    @keyframes ripple {
+      0% { transform: scale(1); opacity: 0.8; }
+      100% { transform: scale(1.8); opacity: 0; }
     }
 
-    /* POPUP ETNOGRÁFICO */
+    /* POPUP ETNOGRÁFICO CON ACCIONES */
     .leaflet-popup-content-wrapper {
-      border-radius: 12px;
       background: var(--paper);
       border: 2px solid var(--ochre);
-      box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+      border-radius: 14px;
       padding: 0;
       overflow: hidden;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.3);
     }
 
-    .custom-popup {
+    .popup-box {
       padding: 14px 16px;
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .popup-badge {
-      display: inline-block;
+    .popup-tag {
       font-size: 0.68rem;
       font-weight: 700;
       text-transform: uppercase;
       padding: 3px 8px;
       border-radius: 12px;
       color: #fff;
+      display: inline-block;
       margin-bottom: 6px;
     }
 
-    .custom-popup h3 {
+    .popup-box h3 {
       font-family: 'Outfit', sans-serif;
       font-size: 1.05rem;
       color: var(--jungle);
       margin-bottom: 6px;
-      line-height: 1.25;
     }
 
-    .custom-popup p {
-      font-size: 0.83rem;
-      color: #3b322a;
+    .popup-box p {
+      font-size: 0.82rem;
+      color: #3b3026;
       line-height: 1.45;
+      margin-bottom: 10px;
     }
 
-    /* RESPONSIVE */
-    #toggle-menu {
+    .popup-actions {
+      display: flex;
+      gap: 6px;
+      border-top: 1px solid #e0d0be;
+      padding-top: 8px;
+    }
+
+    .btn-popup-action {
+      background: var(--jungle);
+      color: #fff;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* MODAL DE FICHA DE REGISTRO TECNOLÓGICO */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(14, 42, 34, 0.75);
+      backdrop-filter: blur(4px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-card {
+      background: #fff;
+      width: 90%;
+      max-width: 520px;
+      border-radius: 16px;
+      padding: 1.6rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border-top: 6px solid var(--ochre);
+    }
+
+    .modal-card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      color: var(--jungle);
+      margin-bottom: 0.4rem;
+    }
+
+    .form-group {
+      margin-top: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .form-group label {
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: #635447;
+      text-transform: uppercase;
+    }
+
+    .form-group input, .form-group textarea, .form-group select {
+      padding: 8px 10px;
+      border: 1px solid #d1c0ae;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+    }
+
+    .btn-save-record {
+      margin-top: 16px;
+      background: var(--ochre);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    /* BOTÓN MÓVIL */
+    #mobile-toggle {
       display: none;
       position: absolute;
-      top: 15px;
-      left: 15px;
-      z-index: 1200;
+      top: 15px; left: 15px; z-index: 1100;
       background: var(--jungle);
       color: #fff;
       border: none;
       padding: 10px 14px;
       border-radius: 8px;
       font-weight: 600;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.3);
       cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     }
 
     @media (max-width: 860px) {
-      #sidebar {
-        position: absolute;
-        transform: translateX(-100%);
-      }
-      #sidebar.open {
-        transform: translateX(0);
-      }
-      #toggle-menu {
-        display: block;
-      }
+      #sidebar { position: absolute; transform: translateX(-100%); }
+      #sidebar.open { transform: translateX(0); }
+      #mobile-toggle { display: block; }
     }
   </style>
 </head>
 <body>
 
-  <button id="toggle-menu" onclick="toggleNav()"><i class="fa-solid fa-compass"></i> Menú Cartográfico</button>
+  <button id="mobile-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-compass"></i> Menú Etnográfico</button>
 
-  <!-- PANEL LATERAL DE INTERVENCIÓN SOCIAL -->
+  <!-- SIDEBAR DIDÁCTICO -->
   <aside id="sidebar">
-    <header class="header-banner">
-      <div class="academic-tag">
-        <i class="fa-solid fa-graduation-cap"></i> Trabajo Social · CENDA
+    <div class="banner">
+      <div class="academic-pill">
+        <i class="fa-solid fa-laptop-code"></i> Innovación Social & Memoria Viva
       </div>
       <h1>Cartografía Social de Docordó</h1>
-      <p>Salvaguarda de los Cantos Fúnebres y Memoria Biocultural</p>
-    </header>
+      <p>Archivo Vivo de Cantos Fúnebres · El Litoral del San Juan</p>
+    </div>
 
-    <!-- Barra de Filtros -->
-    <nav class="filter-bar">
-      <button class="filter-btn active" onclick="filterLayers('todos', this)"><i class="fa-solid fa-border-all"></i> Todo</button>
-      <button class="filter-btn" onclick="filterLayers('sagrado', this)"><i class="fa-solid fa-hands-praying"></i> Geografía Sagrada</button>
-      <button class="filter-btn" onclick="filterLayers('actores', this)"><i class="fa-solid fa-people-group"></i> Liderazgos</button>
-      <button class="filter-btn" onclick="filterLayers('amenazas', this)"><i class="fa-solid fa-triangle-exclamation"></i> Amenazas</button>
-    </nav>
+    <!-- Pestañas de Navegación -->
+    <div class="tabs-bar">
+      <button class="tab-btn active" onclick="switchTab('nodos', this)"><i class="fa-solid fa-map-pin"></i> Territorio</button>
+      <button class="tab-btn" onclick="switchTab('tecnologia', this)"><i class="fa-solid fa-microchip"></i> Mediación Digital</button>
+      <button class="tab-btn" onclick="switchTab('academico', this)"><i class="fa-solid fa-book-bookmark"></i> Trabajo Social</button>
+    </div>
 
-    <div class="content-area">
-      <!-- Ficha de Principio Disciplinar -->
-      <section class="card-note" style="border-left: 5px solid var(--ochre);">
-        <h2><i class="fa-solid fa-heart-pulse"></i> El Canto como Re-existencia</h2>
-        <p>
-          En Santa Genoveva de Docordó, los alabaos, gualíes y novenas no son folclore estático: son <strong>dispositivos de sanación comunitaria del duelo</strong> y resistencia pacífica de las comunidades afro e indígenas frente al conflicto armado.
-        </p>
-      </section>
-
-      <!-- Lista Interactiva de Puntos -->
-      <section class="card-note">
-        <h2><i class="fa-solid fa-location-crosshairs"></i> Nodos del Territorio (Haz clic)</h2>
-        <div id="nodes-container">
-          <!-- Se llena dinámicamente con JS -->
+    <!-- Scroll Content -->
+    <div class="panel-scroll">
+      
+      <!-- PESTAÑA 1: TERRITORIO Y MAPA -->
+      <div id="tab-nodos">
+        <!-- Reproductor de Paisaje Sonoro -->
+        <div class="audio-player-box mb-3" style="margin-bottom: 1rem;">
+          <h3>
+            <span><i class="fa-solid fa-radio"></i> Paisaje Sonoro Ancestral</span>
+            <i class="fa-solid fa-volume-high"></i>
+          </h3>
+          <p id="audio-desc" class="sound-status">
+            Presiona un botón para escuchar la atmósfera ritual o pulsa un nodo en el mapa:
+          </p>
+          <div class="sound-btns">
+            <button class="btn-sound" onclick="playAcousticSample('alabao')">
+              <i class="fa-solid fa-music"></i> Tonos de Alabao
+            </button>
+            <button class="btn-sound" onclick="playAcousticSample('guali')">
+              <i class="fa-solid fa-drum"></i> Cununo de Gualí
+            </button>
+            <button class="btn-sound" onclick="stopAudio()">
+              <i class="fa-solid fa-stop"></i> Silencio
+            </button>
+          </div>
         </div>
-      </section>
 
-      <!-- Resguardo Institucional -->
-      <section class="card-note">
-        <h2><i class="fa-solid fa-shield-halved"></i> Autoridad Étnico-Territorial</h2>
-        <p>
-          Bajo la <strong>Ley 70 de 1993</strong>, el Consejo Comunitario General del San Juan (<strong>ACADESAN</strong>) custodia las 64 comunidades de la cuenca, articulando la protección del territorio colectivo y la salvaguarda de sus sabedores ancestrales.
-        </p>
-      </section>
+        <!-- Lista de Nodos -->
+        <div class="box">
+          <h2><i class="fa-solid fa-location-crosshairs"></i> Nodos de la Memoria Oral</h2>
+          <div class="node-list" id="nodes-container"></div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 2: TECNOLOGÍA EN TRABAJO SOCIAL -->
+      <div id="tab-tecnologia" style="display: none;">
+        <div class="box" style="border-left: 5px solid var(--ochre);">
+          <h2><i class="fa-solid fa-server"></i> La Tecnología al Servicio del Cuidado</h2>
+          <p>
+            En este proyecto, la tecnología <strong>no reemplaza la voz de las mayoras</strong> ni saca el conocimiento del territorio. Se utiliza como un dispositivo de soberanía comunitaria y salvaguarda frente a las restricciones de movilidad fluvial:
+          </p>
+          <ul style="margin: 10px 0 10px 18px; font-size: 0.82rem; line-height: 1.5; color: #433930;">
+            <li><strong>Grabadora Comunitaria Móvil:</strong> Registro in situ de alabaos y novenas operada por las jóvenes del semillero[span_0](start_span)[span_0](end_span).</li>
+            <li><strong>Archivo Offline / Nube Comunitaria:</strong> Respaldo digital seguro con acceso exclusivo bajo custodia de ACADESAN y Rescate Ancestral[span_1](start_span)[span_1](end_span).</li>
+            <li><strong>Fichas Etnográficas QR:</strong> Marcación comunitaria para que estudiantes y niños accedan a las letras y sentidos de los rezos.</li>
+          </ul>
+          <button class="btn-save-record" style="margin-top: 8px;" onclick="openRecordModal()">
+            <i class="fa-solid fa-plus-circle"></i> Simular Registro de Canto en el Archivo
+          </button>
+        </div>
+
+        <div class="box">
+          <h2><i class="fa-solid fa-database"></i> Registro Rápido del Semillero</h2>
+          <p style="font-size: 0.8rem; margin-bottom: 8px;">Cantos indexados recientemente en Santa Genoveva de Docordó[span_2](start_span)[span_2](end_span):</p>
+          <div id="recorded-songs-list" style="display: flex; flex-direction: column; gap: 6px; font-size: 0.8rem;">
+            <div style="background: #fdfaf5; padding: 6px 10px; border-radius: 6px; border: 1px solid #ebd9c5;">
+              <strong>"Santo Dios Santo Fuerte"</strong> · Alabao de Velorio Mayor<br>
+              <span style="font-size: 0.72rem; color: #887869;">Informante: Mayora Matrona · Registrado por Semillero Juventudes</span>[span_3](start_span)[span_3](end_span)
+            </div>
+            <div style="background: #fdfaf5; padding: 6px 10px; border-radius: 6px; border: 1px solid #ebd9c5;">
+              <strong>"Adiós angelito nuevo"</strong> · Gualí con Cununo<br>
+              <span style="font-size: 0.72rem; color: #887869;">Acompañamiento: Único Tamborero · Rito infantil</span>[span_4](start_span)[span_4](end_span)
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 3: ENFOQUE METODOLÓGICO -->
+      <div id="tab-academico" style="display: none;">
+        <div class="box" style="border-left: 5px solid var(--jungle);">
+          <h2><i class="fa-solid fa-hand-holding-heart"></i> Acción sin Daño y Ética</h2>
+          <p>
+            Intervención realizada bajo los postulados del Trabajo Social en contextos de conflicto armado. Se garantiza que la titularidad del saber pertenece a la comunidad y que los testimonios no exponen la seguridad de los sabedores en el río San Juan[span_5](start_span)[span_5](end_span).
+          </p>
+        </div>
+        <div class="box">
+          <h2><i class="fa-solid fa-users-gear"></i> Intervención por Campos: Cultura</h2>
+          <p>
+            <strong>Asignatura:</strong> Campos de Intervención Profesional (CENDA)<br>
+            <strong>Docente:</strong> Xiomara Natalia Ospina Díaz<br>
+            <strong>Comunidad:</strong> Rescate Ancestral & Semillero de Juventudes de Docordó[span_6](start_span)[span_6](end_span)
+          </p>
+        </div>
+      </div>
+
     </div>
   </aside>
 
-  <!-- MAPA RASTER / CANVAS INTERACTIVO -->
+  <!-- VISOR RASTER DE CARTOGRAFÍA SOCIAL -->
   <main id="map-viewport"></main>
+
+  <!-- MODAL: FICHA DIGITAL DE REGISTRO COMUNITARIO -->
+  <div class="modal-overlay" id="modal-register">
+    <div class="modal-card">
+      <h3><i class="fa-solid fa-microphone-lines"></i> Ficha de Registro de Canto Ancestral</h3>
+      <p style="font-size: 0.8rem; color: #665b50;">Módulo de catalogación digital participativa del semillero de juventudes.</p>
+      
+      <div class="form-group">
+        <label>Nombre del Canto o Rezo:</label>
+        <input type="text" id="song-title" placeholder="Ej: San Antonio Bendito, El Rosario de Ánimas..." />
+      </div>
+
+      <div class="form-group">
+        <label>Tipo de Rito:</label>
+        <select id="song-type">
+          <option value="Alabao fúnebre de adulto">Alabao fúnebre de cuerpo presente</option>
+          <option value="Gualí (despedida de angelito/niño)">Gualí de angelito (con tambor)</option>
+          <option value="Novena comunitaria">Canto de novena o levantamiento de tumba</option>
+          <option value="Arrullo">Arrullo patronal / Santa Genoveva</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Mayora Sabedora / Informante:</label>
+        <input type="text" id="song-author" placeholder="Ej: Mayora del grupo Rescate Ancestral" />
+      </div>
+
+      <div class="form-group">
+        <label>Versos iniciales o notas etnográficas:</label>
+        <textarea id="song-notes" rows="3" placeholder="Escriba aquí los versos transmitidos oralmente..."></textarea>
+      </div>
+
+      <button class="btn-save-record" onclick="saveRecord()"><i class="fa-solid fa-floppy-disk"></i> Guardar en el Archivo Vivo</button>
+      <button class="btn-save-record" style="background: #999; margin-top: 6px;" onclick="closeRecordModal()">Cancelar</button>
+    </div>
+  </div>
 
   <!-- Leaflet JS -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Inicializar mapa usando el sistema de coordenadas de la imagen (L.CRS.Simple)
+    // 1. INICIALIZAR MAPA RASTER
     const map = L.map('map-viewport', {
       crs: L.CRS.Simple,
       minZoom: -1.2,
@@ -369,26 +590,26 @@
       zoomSnap: 0.2
     });
 
-    // Dimensiones proporcionales de tu imagen generada
     const imgWidth = 1000;
     const imgHeight = 1000;
     const bounds = [[0, 0], [imgHeight, imgWidth]];
 
-    // Carga de la imagen de cartografía social como mapa base
-    const mapImage = L.imageOverlay('cartografia_social_santa_genoveva_docordo.png', bounds).addTo(map);
+    // Mapa base usando tu ilustración
+    L.imageOverlay('cartografia_social_santa_genoveva_docordo.png', bounds).addTo(map);
     map.fitBounds(bounds);
 
-    // DATOS DE LOS NODOS (Calibrados sobre la ilustración)
+    // 2. NODOS ETNOGRÁFICOS
     const nodes = [
       {
         id: "estera",
         nombre: "La Estera Tradicional: Círculo de la Palabra",
         categoria: "sagrado",
-        catLabel: "Geografía Sagrada",
+        catLabel: "Pedagogía Ancestral",
         color: "#c86d35",
         icon: "fa-solid fa-circle-notch",
         coords: [490, 520],
-        desc: "Ubicada en el corazón de la cartografía. Espacio horizontal de diálogo donde se colocan velas, pañuelos blancos y plantas de azotea para transmitir los tonos y rezos tradicionales de mayoras a jóvenes."
+        sound: "alabao",
+        desc: "Centro neurálgico de transmisión horizontal. Alrededor de la estera se ubican las plantas de azotea, las velas y el pañuelo blanco para enseñar los tonos y rezos a las nuevas generaciones."
       },
       {
         id: "cantadoras",
@@ -398,7 +619,8 @@
         color: "#214d3c",
         icon: "fa-solid fa-users",
         coords: [565, 380],
-        desc: "Diez sabedores (7 mujeres y 3 hombres) liderados por tres matronas. Custodian los alabaos fúnebres de cuerpo presente y las novenas comunitarias en la cabecera municipal."
+        sound: "alabao",
+        desc: "Diez sabedores (7 mujeres y 3 hombres) liderados por tres matronas. Su canto sostiene el duelo comunitario y garantiza que los muertos sean despedidos dignamente en la cuenca."
       },
       {
         id: "semillero",
@@ -407,8 +629,8 @@
         catLabel: "Relevo Generacional",
         color: "#2a9d8f",
         icon: "fa-solid fa-child-reaching",
-        coords: [540, 680],
-        desc: "Diez niñas y adolescentes que aprenden la postura ritual, la afinación vocal y la memoria lírica para evitar que la tradición fúnebre se extinga."
+        sound: "alabao",
+        desc: "Diez niñas y adolescentes de Docordó que aprenden la postura ritual, la memorización de versos y la afinación vocal, asumiendo el relevo de la tradición oral."
       },
       {
         id: "tamborero",
@@ -418,27 +640,28 @@
         color: "#b07d3b",
         icon: "fa-solid fa-drum",
         coords: [390, 360],
-        desc: "Encargado de la ejecución del cununo y la percusión tradicional durante los gualíes (despedida de niños/angelitos). Actor fundamental y a la vez en alta vulnerabilidad por falta de relevo."
+        sound: "guali",
+        desc: "Interpreta el cununo y el tambor exclusivamente en los gualíes de niños. Es una figura de alta vulnerabilidad porque no cuenta actualmente con un aprendiz directo."
       },
       {
         id: "iglesia",
-        nombre: "Iglesia Parroquial de Santa Genoveva",
+        nombre: "Iglesia Parroquial Santa Genoveva",
         categoria: "sagrado",
         catLabel: "Espacio Litúrgico",
         color: "#236f8e",
         icon: "fa-solid fa-church",
-        coords: [740, 580],
-        desc: "Espacio litúrgico central donde se realizan las misas de cuerpo presente, altares de velación comunitaria y las conmemoraciones patronales."
+        sound: "alabao",
+        desc: "Punto de encuentro de misas de cuerpo presente, novenas y altares patronales donde la fe católica dialoga con la espiritualidad afrodescendiente."
       },
       {
         id: "cementerio",
         nombre: "Cementerio: Levantamiento de Tumba",
         categoria: "sagrado",
-        catLabel: "Rito del Último Adiós",
+        catLabel: "Último Adiós",
         color: "#4a5568",
         icon: "fa-solid fa-monument",
-        coords: [240, 530],
-        desc: "Lugar del ritual definitivo donde los alabaos alcanzan su mayor carga emotiva para consolar a los deudos y despedir al alma hacia su descanso eterno."
+        sound: "alabao",
+        desc: "Espacio sagrado del descanso final. Aquí los alabaos cobran su máxima solemnidad para que el alma del difunto se desprenda y encuentre la paz."
       },
       {
         id: "escuela",
@@ -447,109 +670,213 @@
         catLabel: "Espacio Etnoeducativo",
         color: "#2f5d50",
         icon: "fa-solid fa-school-flag",
-        coords: [360, 840],
-        desc: "Escenario de encuentro cotidiano de las juventudes y niños, clave para articular la educación formal con los saberes ancestrales de la cuenca."
+        sound: null,
+        desc: "Escenario de convergencia cotidiana donde el semillero se articula con la vida escolar para salvaguardar la memoria dentro de las aulas."
       },
       {
         id: "rio",
-        nombre: "Río San Juan: Navegación Restringida",
+        nombre: "Río San Juan: Confinamiento y Movilidad",
         categoria: "amenazas",
-        catLabel: "Arteria Fluvial y Conflicto",
+        catLabel: "Arteria Fluvial y Alerta",
         color: "#a63a3a",
         icon: "fa-solid fa-triangle-exclamation",
         coords: [700, 240],
-        desc: "Única vía de transporte hacia Buenaventura y las veredas. Sufre constantes restricciones por actores armados, confinamientos y paros armados que recortan los velorios y aíslan a las comunidades."
+        sound: null,
+        desc: "Vía de transporte fluvial exclusiva. Las restricciones armadas y el orden público limitan los traslados y reducen los tiempos tradicionales de los velorios comunitarios."
       },
       {
         id: "conflicto",
-        nombre: "Zona de Riesgo y Confinamiento",
+        nombre: "Zonas de Riesgo Territorial",
         categoria: "amenazas",
-        catLabel: "Presencia Armada",
+        catLabel: "Vulneración Territorial",
         color: "#a63a3a",
         icon: "fa-solid fa-skull-crossbones",
-        coords: [710, 830],
-        desc: "Representa la vulneración sobre los tiempos rituales ancestrales, el desplazamiento forzado y las presiones que debilitan el tejido social comunitario."
+        sound: null,
+        desc: "Mapeo preventivo de factores que originan desplazamientos forzados hacia Docordó y que ponen en riesgo la continuidad de las expresiones ancestrales."
       }
     ];
 
-    // Cargar Marcadores y Renderizar Menú
-    const markerLayers = [];
-    const nodesContainer = document.getElementById('nodes-container');
+    const markerInstances = [];
+    const container = document.getElementById('nodes-container');
 
-    nodes.forEach((node, index) => {
-      // 1. Crear Pin con Icono
-      const customPin = L.divIcon({
-        className: 'marker-icon-wrapper',
+    nodes.forEach((node, i) => {
+      // Pin interactivo
+      const pin = L.divIcon({
+        className: 'pin-wrapper',
         html: `
-          <div class="pulse-pin" style="background-color: ${node.color}; border-color: #fff;">
+          <div class="pin-sonar" style="background-color: ${node.color}; border-color: #fff;">
             <i class="${node.icon}"></i>
           </div>
         `,
-        iconSize: [36, 36],
-        iconAnchor: [18, 18],
-        popupAnchor: [0, -18]
+        iconSize: [38, 38],
+        iconAnchor: [19, 19],
+        popupAnchor: [0, -19]
       });
 
-      const marker = L.marker(node.coords, { icon: customPin });
+      const marker = L.marker(node.coords, { icon: pin });
 
-      // Popup Etnográfico
       marker.bindPopup(`
-        <div class="custom-popup">
-          <span class="popup-badge" style="background: ${node.color};">${node.catLabel}</span>
+        <div class="popup-box">
+          <span class="popup-tag" style="background: ${node.color};">${node.catLabel}</span>
           <h3>${node.nombre}</h3>
           <p>${node.desc}</p>
+          <div class="popup-actions">
+            ${node.sound ? `<button class="btn-popup-action" onclick="playAcousticSample('${node.sound}')"><i class="fa-solid fa-volume-high"></i> Escuchar Tono</button>` : ''}
+            <button class="btn-popup-action" style="background: var(--ochre);" onclick="openRecordModal()"><i class="fa-solid fa-file-pen"></i> Catalogar</button>
+          </div>
         </div>
       `);
 
-      marker.category = node.categoria;
       marker.addTo(map);
-      markerLayers.push(marker);
+      markerInstances.push(marker);
 
-      // 2. Crear Tarjeta en el Panel Lateral
-      const item = document.createElement('div');
-      item.className = 'node-item';
-      item.onclick = () => focusNode(index);
-      item.innerHTML = `
-        <div class="node-icon" style="background: ${node.color};">
+      // Tarjeta en lista lateral
+      const card = document.createElement('div');
+      card.className = 'node-card';
+      card.onclick = () => focusNode(i);
+      card.innerHTML = `
+        <div class="node-avatar" style="background: ${node.color};">
           <i class="${node.icon}"></i>
         </div>
-        <div class="node-info">
+        <div class="node-texts">
           <h4>${node.nombre}</h4>
           <span>${node.catLabel}</span>
         </div>
       `;
-      nodesContainer.appendChild(item);
+      container.appendChild(card);
     });
 
-    // Enfocar elemento en el mapa
     function focusNode(idx) {
       const node = nodes[idx];
-      const marker = markerLayers[idx];
-
+      const marker = markerInstances[idx];
       map.flyTo(node.coords, 0.4, { duration: 1.2 });
       marker.openPopup();
+      if (node.sound) playAcousticSample(node.sound);
+      if (window.innerWidth <= 860) toggleSidebar();
+    }
 
-      if (window.innerWidth <= 860) {
-        toggleNav();
+    // 3. SINTETIZADOR DE PAISAJE SONORO (Web Audio API)
+    // Permite que la web genere el sonido ritual sin depender de archivos MP3 externos caídos
+    let audioCtx = null;
+    let isPlaying = false;
+    let soundInterval = null;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
       }
     }
 
-    // Filtros de Capas
-    function filterLayers(cat, btn) {
-      document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+    function playAcousticSample(type) {
+      initAudio();
+      stopAudio();
+      isPlaying = true;
+      const desc = document.getElementById('audio-desc');
 
-      markerLayers.forEach(marker => {
-        if (cat === 'todos' || marker.category === cat) {
-          if (!map.hasLayer(marker)) map.addLayer(marker);
-        } else {
-          if (map.hasLayer(marker)) map.removeLayer(marker);
-        }
-      });
+      if (type === 'alabao') {
+        desc.innerHTML = `<strong>Reproduciendo:</strong> Polifonía vocal de Alabao (Tono menor solemne tradicional)...`;
+        // Tono harmónico solemne emulando el canto a capela
+        playChantTone(220, 2.5); // La
+        setTimeout(() => playChantTone(261.63, 2.5), 600); // Do
+        setTimeout(() => playChantTone(329.63, 3), 1200); // Mi
+        soundInterval = setInterval(() => {
+          if (!isPlaying) return;
+          playChantTone(220, 2.5);
+          setTimeout(() => playChantTone(261.63, 2.5), 600);
+          setTimeout(() => playChantTone(329.63, 3), 1200);
+        }, 3600);
+      } else if (type === 'guali') {
+        desc.innerHTML = `<strong>Reproduciendo:</strong> Patrón de cununo de Gualí (Compás rápido para angelito)...`;
+        let beat = 0;
+        soundInterval = setInterval(() => {
+          if (!isPlaying) return;
+          playDrumBeat(beat % 2 === 0 ? 110 : 85);
+          beat++;
+        }, 400);
+      }
     }
 
-    // Toggle en móviles
-    function toggleNav() {
+    function playChantTone(freq, dur) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.01, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + dur * 0.4);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + dur);
+    }
+
+    function playDrumBeat(freq) {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      osc.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.25);
+      gain.gain.setValueAtTime(0.25, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.25);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.26);
+    }
+
+    function stopAudio() {
+      isPlaying = false;
+      if (soundInterval) clearInterval(soundInterval);
+      document.getElementById('audio-desc').innerText = 'Atmósfera pausada. Selecciona un punto para reactivar.';
+    }
+
+    // 4. CONTROL DE PESTAÑAS
+    function switchTab(tabId, btn) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      document.getElementById('tab-nodos').style.display = tabId === 'nodos' ? 'block' : 'none';
+      document.getElementById('tab-tecnologia').style.display = tabId === 'tecnologia' ? 'block' : 'none';
+      document.getElementById('tab-academico').style.display = tabId === 'academico' ? 'block' : 'none';
+    }
+
+    // 5. MODAL DE FICHA DE REGISTRO
+    function openRecordModal() {
+      document.getElementById('modal-register').style.display = 'flex';
+    }
+
+    function closeRecordModal() {
+      document.getElementById('modal-register').style.display = 'none';
+    }
+
+    function saveRecord() {
+      const title = document.getElementById('song-title').value.trim();
+      const type = document.getElementById('song-type').value;
+      const author = document.getElementById('song-author').value.trim() || 'Sabedora de Docordó';
+
+      if (!title) {
+        alert('Por favor ingrese el nombre del canto o rezo.');
+        return;
+      }
+
+      const list = document.getElementById('recorded-songs-list');
+      const item = document.createElement('div');
+      item.style.background = '#fdfaf5';
+      item.style.padding = '6px 10px';
+      item.style.borderRadius = '6px';
+      item.style.border = '1px solid #ebd9c5';
+      item.innerHTML = `<strong>"${title}"</strong> · ${type}<br><span style="font-size: 0.72rem; color: #887869;">Informante: ${author} · Registro activo</span>`;
+      list.prepend(item);
+
+      closeRecordModal();
+      document.getElementById('song-title').value = '';
+      document.getElementById('song-notes').value = '';
+      alert('¡Canto registrado exitosamente en la base comunitaria del Archivo Vivo!');
+    }
+
+    function toggleSidebar() {
       document.getElementById('sidebar').classList.toggle('open');
     }
   </script>

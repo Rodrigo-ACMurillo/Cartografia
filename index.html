@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cartografía Social y Memoria Viva | Docordó, Chocó</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <!-- Google Fonts: Inter & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+
+  <style>
+    :root {
+      --ts-green: #1b4d3e;
+      --ts-dark: #0e2a22;
+      --ts-earth: #c97a3e;
+      --ts-gold: #f4a261;
+      --ts-water: #0077b6;
+      --bg-cream: #faf8f5;
+      --card-bg: #ffffff;
+      --text-dark: #264653;
+      --text-muted: #6c757d;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--bg-cream);
+      color: var(--text-dark);
+    }
+
+    /* BARRA LATERAL DIDÁCTICA */
+    #sidebar {
+      width: 420px;
+      min-width: 360px;
+      height: 100%;
+      background: var(--bg-cream);
+      display: flex;
+      flex-direction: column;
+      box-shadow: 4px 0 20px rgba(0,0,0,0.08);
+      z-index: 1000;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .brand-header {
+      background: linear-gradient(135deg, var(--ts-green) 0%, var(--ts-dark) 100%);
+      color: #fff;
+      padding: 1.5rem 1.25rem;
+      border-bottom: 4px solid var(--ts-earth);
+    }
+
+    .academic-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.72rem;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .brand-header h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      line-height: 1.25;
+    }
+
+    .brand-header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 0.3rem;
+    }
+
+    .sidebar-scroll {
+      padding: 1.2rem;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    /* CAJAS DIDÁCTICAS */
+    .edu-box {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 1.1rem;
+      border: 1px solid #ebdcd0;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+    }
+
+    .edu-box h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      color: var(--ts-green);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 0.6rem;
+    }
+
+    .edu-box p {
+      font-size: 0.84rem;
+      line-height: 1.5;
+      color: #495057;
+    }
+
+    /* LISTA INTERACTIVA DE LUGARES DE LA MEMORIA */
+    .places-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .place-chip {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--card-bg);
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1px solid #eee;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .place-chip:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+      border-color: var(--ts-earth);
+    }
+
+    .icon-container {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .place-details h4 {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-dark);
+    }
+
+    .place-details span {
+      font-size: 0.74rem;
+      color: var(--text-muted);
+    }
+
+    /* MAPA */
+    #map {
+      flex: 1;
+      height: 100%;
+    }
+
+    /* PINES PERSONALIZADOS */
+    .custom-marker {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      border: 2px solid #fff;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .custom-marker:hover {
+      transform: rotate(-45deg) scale(1.15);
+    }
+
+    .custom-marker i {
+      transform: rotate(45deg);
+      color: #fff;
+      font-size: 15px;
+    }
+
+    /* POPUPS ESTILO TRABAJO SOCIAL */
+    .leaflet-popup-content-wrapper {
+      border-radius: 14px;
+      padding: 6px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+
+    .ts-popup {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    .ts-popup .cat-tag {
+      font-size: 0.68rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 3px 8px;
+      border-radius: 12px;
+      color: #fff;
+      display: inline-block;
+      margin-bottom: 5px;
+    }
+
+    .ts-popup h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      color: var(--ts-dark);
+      margin-bottom: 5px;
+    }
+
+    .ts-popup p {
+      font-size: 0.82rem;
+      color: #555;
+      line-height: 1.4;
+    }
+
+    /* BOTÓN MÓVIL */
+    #menu-toggle {
+      display: none;
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 1100;
+      background: var(--ts-green);
+      color: #fff;
+      border: none;
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      cursor: pointer;
+    }
+
+    @media (max-width: 820px) {
+      #sidebar {
+        position: absolute;
+        transform: translateX(-100%);
+      }
+      #sidebar.active {
+        transform: translateX(0);
+      }
+      #menu-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <button id="menu-toggle" onclick="toggleSidebar()"><i class="fa-solid fa-bars"></i> Ver Diagnóstico Territorial</button>
+
+  <!-- Panel Lateral -->
+  <aside id="sidebar">
+    <div class="brand-header">
+      <div class="academic-badge">
+        <i class="fa-solid fa-graduation-cap"></i> Trabajo Social · CENDA
+      </div>
+      <h1>Archivo Vivo de Docordó</h1>
+      <p>Cartografía Social de la Memoria y los Ritos Fúnebres</p>
+    </div>
+
+    <div class="sidebar-scroll">
+      <!-- Ficha de Principio Metodológico -->
+      <div class="edu-box" style="border-left: 4px solid var(--ts-earth);">
+        <h2><i class="fa-solid fa-hand-holding-heart"></i> Enfoque: Acción sin Daño</h2>
+        <p>
+          Esta cartografía espacializa el <strong>cuidado del patrimonio inmaterial</strong> (alabaos, novenas y gualíes). No cartografiamos actores de conflicto para proteger a los sabedores de <em>Rescate Ancestral</em>, priorizando los nodos de vida y transmisión oral comunitaria.
+        </p>
+      </div>
+
+      <!-- Lugares con Iconos Didácticos -->
+      <div class="edu-box">
+        <h2><i class="fa-solid fa-map-location-dot"></i> Nodos de la Memoria (Haz clic)</h2>
+        <div class="places-list">
+          
+          <div class="place-chip" onclick="goToNode(0)">
+            <div class="icon-container" style="background: #2a9d8f;">
+              <i class="fa-solid fa-seedling"></i>
+            </div>
+            <div class="place-details">
+              <h4>Semillero y Rescate Ancestral</h4>
+              <span>Transmisión intergeneracional</span>
+            </div>
+          </div>
+
+          <div class="place-chip" onclick="goToNode(1)">
+            <div class="icon-container" style="background: #e76f51;">
+              <i class="fa-solid fa-fire-flame-curved"></i>
+            </div>
+            <div class="place-details">
+              <h4>Espacio Ritual y Mortuorio</h4>
+              <span>Alabaos, novenas y despedida</span>
+            </div>
+          </div>
+
+          <div class="place-chip" onclick="goToNode(2)">
+            <div class="icon-container" style="background: #e9c46a;">
+              <i class="fa-solid fa-ship"></i>
+            </div>
+            <div class="place-details">
+              <h4>Muelle Fluvial de Docordó</h4>
+              <span>Conexión única con Buenaventura</span>
+            </div>
+          </div>
+
+          <div class="place-chip" onclick="goToNode(3)">
+            <div class="icon-container" style="background: #264653;">
+              <i class="fa-solid fa-people-roof"></i>
+            </div>
+            <div class="place-details">
+              <h4>Cabecera Municipal de Docordó</h4>
+              <span>Territorio colectivo ACADESAN</span>
+            </div>
+          </div>
+
+          <div class="place-chip" onclick="goToNode(4)">
+            <div class="icon-container" style="background: #0077b6;">
+              <i class="fa-solid fa-water"></i>
+            </div>
+            <div class="place-details">
+              <h4>Ruta por el Río San Juan</h4>
+              <span>Corredor fluvial biocultural</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Ficha de Contexto Territorial -->
+      <div class="edu-box">
+        <h2><i class="fa-solid fa-book-open-reader"></i> Contexto Biocultural</h2>
+        <p>
+          En <strong>El Litoral del San Juan</strong>, la movilidad es 100% acuática. Los velorios y la enseñanza de los cantos están estrechamente articulados a las dinámicas del río y a la resistencia pacífica de las comunidades afro e indígenas.
+        </p>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Mapa -->
+  <main id="map"></main>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    // Coordenadas reales de Santa Genoveva de Docordó
+    const docordoCenter = [4.2586, -77.3675];
+
+    const map = L.map('map', {
+      zoomControl: true
+    }).setView(docordoCenter, 15);
+
+    // Mapas base
+    const baseOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap colaboradores | CENDA Trabajo Social'
+    }).addTo(map);
+
+    const baseSatellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+      maxZoom: 19,
+      attribution: 'Tiles &copy; Esri'
+    });
+
+    L.control.layers({
+      "🗺️ Mapa Ilustrado": baseOSM,
+      "🛰️ Satélite Natural": baseSatellite
+    }, null, { position: 'topright' }).addTo(map);
+
+    L.control.scale({ metric: true, imperial: false }).addTo(map);
+
+    // Fábrica de Pines con Iconos
+    function createIcon(bg, iconClass) {
+      return L.divIcon({
+        className: 'marker-wrapper',
+        html: `
+          <div class="custom-marker" style="background: ${bg};">
+            <i class="${iconClass}"></i>
+          </div>
+        `,
+        iconSize: [36, 36],
+        iconAnchor: [18, 36],
+        popupAnchor: [0, -32]
+      });
+    }
+
+    const mapItems = [];
+
+    // 0: Rescate Ancestral / Semillero
+    const p1 = L.marker([4.2594, -77.3683], {
+      icon: createIcon('#2a9d8f', 'fa-solid fa-seedling')
+    }).bindPopup(`
+      <div class="ts-popup">
+        <span class="cat-tag" style="background: #2a9d8f;">Relevo Generacional</span>
+        <h3>Sede Rescate Ancestral</h3>
+        <p>Espacio donde los mayores enseñan alabaos y gualíes a niñas, niños y adolescentes del semillero cultural.</p>
+      </div>
+    `);
+    mapItems.push(p1);
+
+    // 1: Espacio Ritual
+    const p2 = L.marker([4.2582, -77.3672], {
+      icon: createIcon('#e76f51', 'fa-solid fa-fire-flame-curved')
+    }).bindPopup(`
+      <div class="ts-popup">
+        <span class="cat-tag" style="background: #e76f51;">Rito Mortuorio</span>
+        <h3>Espacio de Velorios y Rito</h3>
+        <p>Lugar de encuentro comunitario donde la palabra cantada y las novenas despiden a las almas hacia el descanso.</p>
+      </div>
+    `);
+    mapItems.push(p2);
+
+    // 2: Muelle
+    const p3 = L.marker([4.2576, -77.3661], {
+      icon: createIcon('#e9c46a', 'fa-solid fa-ship')
+    }).bindPopup(`
+      <div class="ts-popup">
+        <span class="cat-tag" style="background: #e9c46a; color:#222;">Eje Acuático</span>
+        <h3>Muelle Principal de Docordó</h3>
+        <p>Punto de partida y llegada de las lanchas hacia el puerto de Buenaventura y las cuencas del Bajo San Juan.</p>
+      </div>
+    `);
+    mapItems.push(p3);
+
+    // 3: Cabecera
+    const p4 = L.marker([4.2586, -77.3675], {
+      icon: createIcon('#264653', 'fa-solid fa-people-roof')
+    }).bindPopup(`
+      <div class="ts-popup">
+        <span class="cat-tag" style="background: #264653;">Territorio Colectivo</span>
+        <h3>Santa Genoveva de Docordó</h3>
+        <p>Cabecera municipal (1.498 hab.) bajo jurisdicción étnica de <strong>ACADESAN</strong> en el Pacífico chocoano.</p>
+      </div>
+    `);
+    mapItems.push(p4);
+
+    // 4: Río San Juan
+    const riverCoords = [
+      [4.2576, -77.3661],
+      [4.2520, -77.3735],
+      [4.2410, -77.3890],
+      [4.2250, -77.4120],
+      [4.2050, -77.4350]
+    ];
+    const riverPath = L.polyline(riverCoords, {
+      color: '#0077b6',
+      weight: 6,
+      opacity: 0.85,
+      dashArray: '10, 8'
+    }).bindPopup(`
+      <div class="ts-popup">
+        <span class="cat-tag" style="background: #0077b6;">Corredor Biocultural</span>
+        <h3>Río San Juan</h3>
+        <p>Vía de vida y encuentro que une las 64 comunidades del municipio con la salida al mar.</p>
+      </div>
+    `);
+    mapItems.push(riverPath);
+
+    // Cargar en el mapa
+    const group = L.featureGroup(mapItems).addTo(map);
+
+    // Función didáctica al tocar los botones laterales
+    function goToNode(index) {
+      if (index === 4) {
+        map.fitBounds(riverPath.getBounds(), { padding: [40, 40] });
+        riverPath.openPopup();
+      } else {
+        const target = mapItems[index];
+        map.setView(target.getLatLng(), 17, { animate: true });
+        target.openPopup();
+      }
+      if (window.innerWidth <= 820) {
+        toggleSidebar();
+      }
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('active');
+    }
+  </script>
+</body>
+</html>
